@@ -10,9 +10,9 @@ android {
         applicationId "com.cheesejuice.fancymansionsample"
         minSdk 26
         targetSdk 32
-        versionCode 1
-        versionName "1.0"
-
+        versionCode 100000
+        versionName "1.0.0"
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true
