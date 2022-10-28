@@ -19,6 +19,7 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStream
 
+@OptIn(ExperimentalSerializationApi::class)
 class FileRepository constructor(private val context: Context){
     // file path
     fun dirBook(bookId: Long) = "book$bookId"
@@ -66,7 +67,6 @@ class FileRepository constructor(private val context: Context){
         }
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
     fun makeConfigFile(config: Config): Boolean{
         try{
             val file = File(rootPath, fileConfig(config.bookId))
@@ -83,7 +83,6 @@ class FileRepository constructor(private val context: Context){
         return true
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
     fun makeSlideFile(bookId: Long, slide: Slide): Boolean{
         try{
             val file = File(rootPath, fileSlide(bookId, slide.slideId))
@@ -100,7 +99,6 @@ class FileRepository constructor(private val context: Context){
         return true
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
     fun makeLogicFile(logic: Logic): Boolean{
         try{
             val file = File(rootPath, fileLogic(logic.bookId))
@@ -118,7 +116,6 @@ class FileRepository constructor(private val context: Context){
     }
 
     // get data
-    @OptIn(ExperimentalSerializationApi::class)
     fun getConfigFromFile(bookId: Long): Config?{
         var config: Config? = null
         try{
@@ -133,7 +130,6 @@ class FileRepository constructor(private val context: Context){
         return config
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
     fun getLogicFromFile(bookId: Long): Logic?{
         var logic: Logic? = null
         try{
@@ -150,7 +146,6 @@ class FileRepository constructor(private val context: Context){
         return logic
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
     fun getSlideFromFile(bookId: Long, slideId: Long): Slide?{
         var slide: Slide? = null
         try{
@@ -173,7 +168,6 @@ class FileRepository constructor(private val context: Context){
     }
 
     // Make Sample
-    @OptIn(ExperimentalSerializationApi::class)
     fun createSampleBookFiles(){
         val sampleId = 12345L
         val config = Json.decodeFromString<Config>(SampleBook.getConfigSample(sampleId))

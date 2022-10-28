@@ -3,8 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'kotlinx-serialization'
+    id 'dagger.hilt.android.plugin'
 }
-apply plugin: 'dagger.hilt.android.plugin'
 android {
     compileSdk 32
 
@@ -68,6 +68,7 @@ dependencies {
     // hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
+    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
 
     // serialization
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0'

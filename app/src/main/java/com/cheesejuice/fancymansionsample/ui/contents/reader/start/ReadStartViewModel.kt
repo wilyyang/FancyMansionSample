@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.cheesejuice.fancymansionsample.Const
 import com.cheesejuice.fancymansionsample.R
 import com.cheesejuice.fancymansionsample.data.SampleBook
@@ -14,12 +15,23 @@ import com.cheesejuice.fancymansionsample.data.repositories.PreferenceProvider
 import com.cheesejuice.fancymansionsample.data.repositories.file.FileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import javax.inject.Inject
+
+data class ReadStartUiModel(
+    val saveSlideId: Long,
+    val config: Config,
+    val coverImage: File
+)
 
 @HiltViewModel
 class ReadStartViewModel @Inject constructor(
@@ -28,50 +40,37 @@ class ReadStartViewModel @Inject constructor(
     private val fileRepository: FileRepository,
 ) : ViewModel(){
 
-    // loading
-    private val _loading = MutableLiveData<Boolean>()
-    val loading: LiveData<Boolean>
-        get() = _loading
-
-    private var _loadingText: String = ""
-    val loadingText: String
-        get() = _loadingText
-
-    // init
-    private val _init = MutableLiveData<Boolean>()
-    val init: LiveData<Boolean>
-        get() = _init
-
-    private var _config: Config? = null
-    val config: Config?
-        get() = _config
-
-    val coverImage: File?
-        get() = fileRepository.getImageFile(
-            _config!!.bookId,
-            _config!!.coverImage,
-            isCover = true
-        )
-
-    // get save slide id
-    val saveSlideId: Long
-        get() = preferenceProvider.getSaveSlideId(_config!!.bookId)
-
-    init {
-        _loading.value = true
-        _init.value = false
+    sealed class ReadStartUiState {
+        object Empty : ReadStartUiState()
+        object Loading : ReadStartUiState()
+        class Loaded(val data: ReadStartUiModel) : ReadStartUiState()
     }
 
-    fun makeBook(){
-        if(fileRepository.initRootFolder()){
-            if(!preferenceProvider.isSampleMake()){
-                fileRepository.createSampleBookFiles()
+    private val _uiState = MutableStateFlow<ReadStartUiState>(ReadStartUiState.Empty)
+    val uiState: StateFlow<ReadStartUiState> = _uiState
+
+//    init {
+//        _loading.value = true
+//        _init.value = false
+//    }
+
+    private fun fetchWeather() {
+        _uiState.value = ReadStartUiState.Loading
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                makeBook()
+                _uiState.value = ReadStartUiState.Loaded(
+                    ReadStartUiModel()
+                )
+            } catch (ex: Exception) {
             }
         }
     }
 
-    fun initConfig(bookId: Long, publishCode: String) {
+    fun initConfig(bookId: Long) {
         setLoading(true, context.getString(R.string.loading_text_get_read_book))
+        makeBook()
+
         _config = fileRepository.getConfigFromFile(bookId)
         setLoading(false)
         _init.value = true
@@ -84,4 +83,12 @@ class ReadStartViewModel @Inject constructor(
 
     fun deleteBookPref() =
         preferenceProvider.deleteBookPref(_config!!.bookId)
+
+    private fun makeBook(){
+        if(fileRepository.initRootFolder()){
+            if(!preferenceProvider.isSampleMake()){
+                fileRepository.createSampleBookFiles()
+            }
+        }
+    }
 }

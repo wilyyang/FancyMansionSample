@@ -5,19 +5,26 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun ReadStartScreen(
-    onClickReadBookStart: () -> Unit
+    onClickReadBookStart: () -> Unit,
+    viewModel: ReadStartViewModel = hiltViewModel()
 ) {
-    Column{
-        Text(text = "ReadStartScreen!")
-        Text(text = "Loading")
-        Button(onClick = onClickReadBookStart) {
+    viewModel.initConfig(12345)
+    if(viewModel.loading.value == true){
+        Column{
+            Text(text = "Loading")
+        }
+    }else{
+        Column{
+            Text(text = "ReadStartScreen!")
+            Button(onClick = onClickReadBookStart) {
 
+            }
         }
     }
-
 }
 
 @Preview
