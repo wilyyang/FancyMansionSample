@@ -1,18 +1,17 @@
 package com.cheesejuice.fancymansionsample.ui.contents.reader.slide
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cheesejuice.fancymansionsample.Const
-import com.cheesejuice.fancymansionsample.data.models.ChoiceItem
-import com.cheesejuice.fancymansionsample.data.models.Logic
-import com.cheesejuice.fancymansionsample.data.models.Slide
-import com.cheesejuice.fancymansionsample.data.models.SlideLogic
+import com.cheesejuice.fancymansionsample.data.models.*
 import com.cheesejuice.fancymansionsample.data.repositories.PreferenceProvider
 import com.cheesejuice.fancymansionsample.data.repositories.file.FileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
@@ -22,91 +21,88 @@ class ReadSlideViewModel @Inject constructor(
     private val preferenceProvider: PreferenceProvider,
     private val fileRepository: FileRepository,
 ) : ViewModel(){
-
-    // loading
-    private val _loading = MutableLiveData<Boolean>()
-    val loading: LiveData<Boolean>
-        get() = _loading
+    private val _uiState = MutableStateFlow<ReadSlideUiState>(ReadSlideUiState.Empty)
+    val uiState: StateFlow<ReadSlideUiState> = _uiState
 
     // logic
     private lateinit var _logic: Logic
 
-    // slide
-    private var _slide: Slide? = null
-    val slide: Slide?
-        get() = _slide
+    fun initLogicSlide(bookId: Long, slideId: Long) {
+        _uiState.value = ReadSlideUiState.Loading
+        viewModelScope.launch(Dispatchers.IO) {
+            _logic = fileRepository.getLogicFromFile(bookId)!!
 
-    private var _slideLogic: SlideLogic? = null
-    val slideLogic: SlideLogic?
-        get() = _slideLogic
+            val state = makeSlideFromFile(if(slideId == Const.FIRST_SLIDE && _logic.logics.size > 0) _logic.logics[0].slideId else slideId)
 
-    private var _passChoiceItems: ArrayList<ChoiceItem> = arrayListOf()
-    val passChoiceItems: ArrayList<ChoiceItem>
-        get() = _passChoiceItems
+            if(state is ReadSlideUiState.Loaded){
+                /** [#SAVE] Check Save */
+                val savedSlideId = preferenceProvider.getSaveSlideId(_logic.bookId)
+                val firstPlay = state.slide.slideId != savedSlideId
 
-    val coverImage: File?
-        get() = fileRepository.getImageFile(_logic.bookId, _slide!!.slideImage)
-
-    fun initLogicSlide(bookId: Long, slideId: Long, publishCode: String) {
-        _loading.value = true
-
-        _logic = fileRepository.getLogicFromFile(bookId)!!
-
-        makeSlideFromFile(if(slideId == Const.FIRST_SLIDE && _logic.logics.size > 0) _logic.logics[0].slideId else slideId)
-
-        /** [#SAVE] Check Save */
-        val savedSlideId = preferenceProvider.getSaveSlideId(_logic.bookId)
-        val firstPlay = _slide!!.slideId != savedSlideId
-
-        if (firstPlay) {
-            /** [#ID_COUNT] Slide Id (if first play slide) */
-            preferenceProvider.incrementIdCount(_logic.bookId, _slide!!.slideId)
-        }
-
-        _loading.value = false
-    }
-
-    fun moveToNextSlide(choiceItem: ChoiceItem) {
-        _loading.value = true
-
-        /** [#ID_COUNT] Choice Item */
-        preferenceProvider.incrementIdCount(_logic.bookId, choiceItem.id)
-
-        var nextSlideId = Const.END_SLIDE_ID
-        for(enterItem in choiceItem.enterItems) {
-            if(preferenceProvider.checkConditions(_logic.bookId, enterItem.enterConditions)){
-                /** [#ID_COUNT] Enter Item */
-                preferenceProvider.incrementIdCount(_logic.bookId, enterItem.id)
-                nextSlideId = enterItem.enterSlideId
-                break
+                if (firstPlay) {
+                    /** [#ID_COUNT] Slide Id (if first play slide) */
+                    preferenceProvider.incrementIdCount(_logic.bookId, state.slide.slideId)
+                }
             }
-        }
-
-        makeSlideFromFile(nextSlideId)
-
-        _slide?.let {
-            /** [#ID_COUNT] Slide Id */
-            preferenceProvider.incrementIdCount(_logic.bookId, it.slideId)
-
-            /** [#SAVE] Save Slide */
-            preferenceProvider.setSaveSlideId(_logic.bookId, it.slideId)
-        }
-
-        viewModelScope.launch {
-            delay(500L)
-            _loading.value = false
+            Log.e("WILY", "OKOKOK")
+            _uiState.value = state
         }
     }
 
-    private fun makeSlideFromFile(slideId:Long) {
-        _slide = fileRepository.getSlideFromFile(_logic.bookId, slideId)
-        _slideLogic = _logic.logics.find { it.slideId == _slide?.slideId }
+    private fun moveToNextSlide(choiceItem: ChoiceItem) {
+        _uiState.value = ReadSlideUiState.Loading
+        viewModelScope.launch(Dispatchers.IO) {
+            /** [#ID_COUNT] Choice Item */
+            preferenceProvider.incrementIdCount(_logic.bookId, choiceItem.id)
 
-        _passChoiceItems = arrayListOf()
-        for(choiceItem in _slideLogic!!.choiceItems){
-            if(preferenceProvider.checkConditions(_logic.bookId, choiceItem.showConditions)){
-                _passChoiceItems.add(choiceItem)
+            var nextSlideId = Const.END_SLIDE_ID
+            for(enterItem in choiceItem.enterItems) {
+                if(preferenceProvider.checkConditions(_logic.bookId, enterItem.enterConditions)){
+                    /** [#ID_COUNT] Enter Item */
+                    preferenceProvider.incrementIdCount(_logic.bookId, enterItem.id)
+                    nextSlideId = enterItem.enterSlideId
+                    break
+                }
             }
+
+            val state = makeSlideFromFile(nextSlideId)
+            if(state is ReadSlideUiState.Loaded){
+                /** [#ID_COUNT] Slide Id */
+                preferenceProvider.incrementIdCount(_logic.bookId, nextSlideId)
+                /** [#SAVE] Save Slide */
+                preferenceProvider.setSaveSlideId(_logic.bookId, nextSlideId)
+            }
+            _uiState.value = state
+        }
+    }
+
+    private fun makeSlideFromFile(slideId:Long): ReadSlideUiState {
+        fileRepository.getSlideFromFile(_logic.bookId, slideId)?.let { slide ->
+            _logic.logics.find { it.slideId == slide.slideId }?.let { slideLogic ->
+                val passChoiceItems: ArrayList<ChoiceItem> = arrayListOf()
+                for(choiceItem in slideLogic.choiceItems){
+                    if(preferenceProvider.checkConditions(_logic.bookId, choiceItem.showConditions)){
+                        passChoiceItems.add(choiceItem)
+                    }
+                }
+                return ReadSlideUiState.Loaded(
+                    slide = slide,
+                    passChoiceItems = passChoiceItems,
+                    slideImage = fileRepository.getImageFile(_logic.bookId, slide.slideImage),
+                    moveToNextSlideLambda = { choiceItem -> moveToNextSlide(choiceItem) })
+            }
+        }
+        return ReadSlideUiState.Empty
+    }
+
+    sealed class ReadSlideUiState {
+        object Empty : ReadSlideUiState()
+        object Loading : ReadSlideUiState()
+        class Loaded(
+            val slide: Slide, val passChoiceItems: ArrayList<ChoiceItem>, val slideImage: File?,
+            private val moveToNextSlideLambda: (choiceItem: ChoiceItem) -> Unit
+        ) : ReadSlideUiState() {
+            fun moveToNextSlide(choiceItem: ChoiceItem) = moveToNextSlideLambda(choiceItem)
         }
     }
 }
