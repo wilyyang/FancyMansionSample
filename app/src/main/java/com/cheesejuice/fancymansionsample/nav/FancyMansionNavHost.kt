@@ -20,10 +20,11 @@ fun FancyMansionNavHost(
     ) {
         composable(route = ReadStart.route){
             ReadStartScreen(onClickReadBookStart = {
-                navController.navigate(ReadSlide.route)
+                bookId, slideId ->
+                navController.navigate("${ReadSlide.route}?${ReadSlide.readBookIdArg}=$bookId,${ReadSlide.readSlideIdArg}=$slideId")
             })
         }
-        composable(route = ReadSlide.route){
+        composable(route = ReadSlide.routeWithArgs, arguments = ReadSlide.arguments){
             ReadSlideScreen()
         }
     }

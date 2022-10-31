@@ -29,8 +29,8 @@ class ReadSlideViewModel @Inject constructor(
     private lateinit var _logic: Logic
 
     init {
-        val bookId = savedStateHandle.get<Long>(ReadSlide.readBookIdArg)?:12345L
-        val slideId = savedStateHandle.get<Long>(ReadSlide.readSlideIdArg)?:300000000L
+        val bookId = savedStateHandle.get<Long>(ReadSlide.readBookIdArg)!!
+        val slideId = savedStateHandle.get<Long>(ReadSlide.readSlideIdArg)!!
 
         _uiState.value = ReadSlideUiState.Loading
         viewModelScope.launch(Dispatchers.IO) {

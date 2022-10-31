@@ -10,9 +10,9 @@ interface NavDestination {
 object ReadStart : NavDestination {
     override val route = "read.start"
     const val readBookIdArg = "read_book_id"
-    val routeWithArgs = "$route/{$readBookIdArg}"
+    val routeWithArgs = "$route?$readBookIdArg={$readBookIdArg}"
     val arguments = listOf(
-        navArgument(readBookIdArg) { type = NavType.StringType }
+        navArgument(readBookIdArg) { type = NavType.LongType }
     )
 }
 
@@ -20,8 +20,9 @@ object ReadSlide : NavDestination {
     override val route = "read.slide"
     const val readBookIdArg = "read_book_id"
     const val readSlideIdArg = "read_slide_id"
-    val routeWithArgs = "$route/{$readSlideIdArg}"
+    val routeWithArgs = "$route?$readBookIdArg={$readBookIdArg},$readSlideIdArg={$readSlideIdArg}"
     val arguments = listOf(
-        navArgument(readSlideIdArg) { type = NavType.StringType }
+        navArgument(readBookIdArg) { type = NavType.LongType },
+        navArgument(readSlideIdArg) { type = NavType.LongType }
     )
 }
