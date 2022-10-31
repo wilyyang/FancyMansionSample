@@ -1,15 +1,15 @@
 package com.cheesejuice.fancymansionsample.ui.contents.reader.slide
 
-import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cheesejuice.fancymansionsample.Const
 import com.cheesejuice.fancymansionsample.data.models.*
 import com.cheesejuice.fancymansionsample.data.repositories.PreferenceProvider
 import com.cheesejuice.fancymansionsample.data.repositories.file.FileRepository
+import com.cheesejuice.fancymansionsample.nav.ReadSlide
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -20,6 +20,7 @@ import javax.inject.Inject
 class ReadSlideViewModel @Inject constructor(
     private val preferenceProvider: PreferenceProvider,
     private val fileRepository: FileRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel(){
     private val _uiState = MutableStateFlow<ReadSlideUiState>(ReadSlideUiState.Empty)
     val uiState: StateFlow<ReadSlideUiState> = _uiState
@@ -27,7 +28,10 @@ class ReadSlideViewModel @Inject constructor(
     // logic
     private lateinit var _logic: Logic
 
-    fun initLogicSlide(bookId: Long, slideId: Long) {
+    init {
+        val bookId = savedStateHandle.get<Long>(ReadSlide.readBookIdArg)?:12345L
+        val slideId = savedStateHandle.get<Long>(ReadSlide.readSlideIdArg)?:300000000L
+
         _uiState.value = ReadSlideUiState.Loading
         viewModelScope.launch(Dispatchers.IO) {
             _logic = fileRepository.getLogicFromFile(bookId)!!
@@ -44,7 +48,6 @@ class ReadSlideViewModel @Inject constructor(
                     preferenceProvider.incrementIdCount(_logic.bookId, state.slide.slideId)
                 }
             }
-            Log.e("WILY", "OKOKOK")
             _uiState.value = state
         }
     }

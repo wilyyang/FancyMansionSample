@@ -18,6 +18,7 @@ object ReadStart : NavDestination {
 
 object ReadSlide : NavDestination {
     override val route = "read.slide"
+    const val readBookIdArg = "read_book_id"
     const val readSlideIdArg = "read_slide_id"
     val routeWithArgs = "$route/{$readSlideIdArg}"
     val arguments = listOf(

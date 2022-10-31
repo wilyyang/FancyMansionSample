@@ -1,12 +1,14 @@
 package com.cheesejuice.fancymansionsample.ui.contents.reader.start
 
 import android.content.Context
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cheesejuice.fancymansionsample.R
 import com.cheesejuice.fancymansionsample.data.models.Config
 import com.cheesejuice.fancymansionsample.data.repositories.PreferenceProvider
 import com.cheesejuice.fancymansionsample.data.repositories.file.FileRepository
+import com.cheesejuice.fancymansionsample.nav.ReadStart.readBookIdArg
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -21,11 +23,14 @@ class ReadStartViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val preferenceProvider: PreferenceProvider,
     private val fileRepository: FileRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel(){
     private val _uiState = MutableStateFlow<ReadStartUiState>(ReadStartUiState.Empty)
     val uiState: StateFlow<ReadStartUiState> = _uiState
 
-    fun initConfig(bookId: Long) {
+    init {
+        val bookId = savedStateHandle.get<Long>(readBookIdArg)?:12345L
+
         _uiState.value = ReadStartUiState.Loading(context.getString(R.string.loading_text_get_read_book))
         viewModelScope.launch(Dispatchers.IO) {
             makeBook()
