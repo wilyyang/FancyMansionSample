@@ -1,13 +1,27 @@
 package com.cheesejuice.fancymansionsample.ui.contents.reader.start
 
+import android.os.Build.VERSION.SDK_INT
+import androidx.compose.foundation.Image
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.ImageLoader
+import coil.compose.rememberAsyncImagePainter
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
+import coil.request.ImageRequest
+import coil.size.Size.Companion.ORIGINAL
+import com.cheesejuice.fancymansionsample.R
+import com.cheesejuice.fancymansionsample.data.models.Config
+import com.cheesejuice.fancymansionsample.ui.common.LoadingScreen
 
 @Composable
 fun ReadStartScreen(
@@ -15,24 +29,21 @@ fun ReadStartScreen(
     onClickReadBookStart: (bookId:Long, slideId:Long) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
-    ReadStartScreenStateless(state, onClickReadBookStart)
+    ReadStartScreenWithState(state, onClickReadBookStart)
 }
 
 @Composable
-fun ReadStartScreenStateless(
+fun ReadStartScreenWithState(
     state: ReadStartViewModel.ReadStartUiState,
     onClickReadBookStart: (bookId:Long, slideId:Long) -> Unit = { _, _ -> }
 ) {
     Column{
         when(state) {
             is ReadStartViewModel.ReadStartUiState.Loaded -> {
-                Text(text = state.config.title)
-                Button(onClick = { state.deleteBookPref() }){}
-                Button(onClick = {
-                    onClickReadBookStart(state.config.bookId, 200000000L) }){}
+                ReadStartScreenLoaded(state, onClickReadBookStart)
             }
             is ReadStartViewModel.ReadStartUiState.Loading -> {
-                Text(text = state.message)
+                LoadingScreen(loadingText = state.message)
             }
             is ReadStartViewModel.ReadStartUiState.Empty -> {
                 Text(text = "ReadStartScreen Empty")
@@ -41,8 +52,43 @@ fun ReadStartScreenStateless(
     }
 }
 
+@Composable
+fun ReadStartScreenLoaded(
+    state: ReadStartViewModel.ReadStartUiState.Loaded,
+    onClickReadBookStart: (bookId:Long, slideId:Long) -> Unit = { _, _ -> }
+) {
+    Column{
+        val context = LocalContext.current
+        val imageLoader = ImageLoader.Builder(context)
+            .components {
+                if (SDK_INT >= 28) {
+                    add(ImageDecoderDecoder.Factory())
+                } else {
+                    add(GifDecoder.Factory())
+                }
+            }
+            .build()
+
+        Image(
+            painter = rememberAsyncImagePainter(
+                ImageRequest.Builder(context).data(data = state.coverImage).apply(block = {
+                    size(ORIGINAL)
+                }).build(), imageLoader = imageLoader
+            ),
+            contentDescription = null,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Text(text = state.config.title)
+        Button(onClick = { state.deleteBookPref() }){}
+        Button(onClick = {
+            onClickReadBookStart(state.config.bookId, state.saveSlideId) }){}
+    }
+}
+
+
 @Preview
 @Composable
 fun PreviewScreen() {
-    ReadStartScreenStateless(ReadStartViewModel.ReadStartUiState.Empty)
+    ReadStartScreenLoaded(ReadStartViewModel.ReadStartUiState.Loaded(Config(), 100000L, null, {}))
 }
