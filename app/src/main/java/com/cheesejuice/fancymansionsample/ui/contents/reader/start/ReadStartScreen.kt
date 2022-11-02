@@ -37,17 +37,15 @@ fun ReadStartScreenWithState(
     state: ReadStartViewModel.ReadStartUiState,
     onClickReadBookStart: (bookId:Long, slideId:Long) -> Unit = { _, _ -> }
 ) {
-    Column{
-        when(state) {
-            is ReadStartViewModel.ReadStartUiState.Loaded -> {
-                ReadStartScreenLoaded(state, onClickReadBookStart)
-            }
-            is ReadStartViewModel.ReadStartUiState.Loading -> {
-                LoadingScreen(loadingText = state.message)
-            }
-            is ReadStartViewModel.ReadStartUiState.Empty -> {
-                Text(text = "ReadStartScreen Empty")
-            }
+    when(state) {
+        is ReadStartViewModel.ReadStartUiState.Loaded -> {
+            ReadStartScreenLoaded(state, onClickReadBookStart)
+        }
+        is ReadStartViewModel.ReadStartUiState.Loading -> {
+            LoadingScreen(loadingText = state.message)
+        }
+        is ReadStartViewModel.ReadStartUiState.Empty -> {
+            Text(text = "ReadStartScreen Empty")
         }
     }
 }
@@ -57,7 +55,7 @@ fun ReadStartScreenLoaded(
     state: ReadStartViewModel.ReadStartUiState.Loaded,
     onClickReadBookStart: (bookId:Long, slideId:Long) -> Unit = { _, _ -> }
 ) {
-    Column{
+    Column(Modifier.fillMaxWidth()){
         val openDialog = remember { mutableStateOf(false)  }
 
         val context = LocalContext.current
@@ -89,8 +87,8 @@ fun ReadStartScreenLoaded(
         if (openDialog.value) {
             CustomAlertDialog(title = stringResource(id = R.string.record_dialog_title),
             text = stringResource(id = R.string.record_dialog_text),
-            confirmAction ={ openDialog.value = false},
-            dismissAction = { openDialog.value = false; onClickReadBookStart(state.config.bookId, state.saveSlideId) })
+            confirmAction ={ openDialog.value = false; onClickReadBookStart(state.config.bookId, state.saveSlideId)},
+            dismissAction = { openDialog.value = false; state.deleteBookPref(); onClickReadBookStart(state.config.bookId, state.saveSlideId) })
         }
     }
 }

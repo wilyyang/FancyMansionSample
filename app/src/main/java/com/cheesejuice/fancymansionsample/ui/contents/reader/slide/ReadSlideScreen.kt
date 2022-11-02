@@ -35,45 +35,52 @@ fun ReadSlideScreen(
 fun ReadSlideScreenWithState(
     state: ReadSlideViewModel.ReadSlideUiState
 ) {
-    Column{
-        when(state) {
-            is ReadSlideViewModel.ReadSlideUiState.Loaded -> {
-                val context = LocalContext.current
-                val imageLoader = ImageLoader.Builder(context)
-                    .components {
-                        if (Build.VERSION.SDK_INT >= 28) {
-                            add(ImageDecoderDecoder.Factory())
-                        } else {
-                            add(GifDecoder.Factory())
-                        }
-                    }
-                    .build()
+    when(state) {
+        is ReadSlideViewModel.ReadSlideUiState.Loaded -> {
+            ReadSlideScreenLoaded(state)
+        }
+        is ReadSlideViewModel.ReadSlideUiState.Loading -> {
+            LoadingScreen()
+        }
+        is ReadSlideViewModel.ReadSlideUiState.Empty -> {
+            Text(text = "ReadSlideScreen Empty")
+        }
+    }
+}
 
-                Image(
-                    painter = rememberAsyncImagePainter(
-                        ImageRequest.Builder(context).data(data = state.slideImage).apply(block = {
-                            size(Size.ORIGINAL)
-                        }).build(), imageLoader = imageLoader
-                    ),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                Text(text = state.slide.slideTitle)
-                Text(text = state.slide.description)
-
-                LazyColumn {
-                    items(state.passChoiceItems) { item ->
-                        Button(onClick = {
-                            state.moveToNextSlide(item)
-                        }){ Text(text = item.title)}
-                    }
+@Composable
+fun ReadSlideScreenLoaded(
+    state: ReadSlideViewModel.ReadSlideUiState.Loaded
+) {
+    Column {
+        val context = LocalContext.current
+        val imageLoader = ImageLoader.Builder(context)
+            .components {
+                if (Build.VERSION.SDK_INT >= 28) {
+                    add(ImageDecoderDecoder.Factory())
+                } else {
+                    add(GifDecoder.Factory())
                 }
             }
-            is ReadSlideViewModel.ReadSlideUiState.Loading -> {
-                LoadingScreen()
-            }
-            is ReadSlideViewModel.ReadSlideUiState.Empty -> {
-                Text(text = "ReadSlideScreen Empty")
+            .build()
+
+        Image(
+            painter = rememberAsyncImagePainter(
+                ImageRequest.Builder(context).data(data = state.slideImage).apply(block = {
+                    size(Size.ORIGINAL)
+                }).build(), imageLoader = imageLoader
+            ),
+            contentDescription = null,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Text(text = state.slide.slideTitle)
+        Text(text = state.slide.description)
+
+        LazyColumn {
+            items(state.passChoiceItems) { item ->
+                Button(onClick = {
+                    state.moveToNextSlide(item)
+                }){ Text(text = item.title)}
             }
         }
     }
