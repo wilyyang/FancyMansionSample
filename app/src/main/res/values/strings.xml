@@ -2,4 +2,12 @@
     <string name="app_name">상상맨션 샘플</string>
 
     <string name="loading_text_get_read_book">읽으려는 책 정보를 가져오는 중입니다.</string>
+
+    <string name="alert_default_title">오류</string>
+    <string name="alert_default_message">데이터 처리 중에 문제가 발생했습니다. 이전 화면으로 이동합니다.</string>
+    <string name="alert_confirm_button">확인</string>
+    <string name="alert_dismiss_button">취소</string>
+
+    <string name="record_dialog_title">기록 불러오기</string>
+    <string name="record_dialog_text">마지막 읽은 시점으로 이동할까요?</string>
 </resources>

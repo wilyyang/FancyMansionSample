@@ -4,6 +4,9 @@ import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -55,8 +58,16 @@ fun ReadSlideScreenWithState(
                     contentDescription = null,
                     modifier = Modifier.fillMaxWidth(),
                 )
-
+                Text(text = state.slide.slideTitle)
                 Text(text = state.slide.description)
+
+                LazyColumn {
+                    items(state.passChoiceItems) { item ->
+                        Button(onClick = {
+                            state.moveToNextSlide(item)
+                        }){ Text(text = item.title)}
+                    }
+                }
             }
             is ReadSlideViewModel.ReadSlideUiState.Loading -> {
                 LoadingScreen()

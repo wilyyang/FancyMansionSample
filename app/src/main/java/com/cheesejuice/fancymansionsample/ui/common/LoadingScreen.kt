@@ -22,6 +22,6 @@ fun LoadingScreen(
 
 @Preview
 @Composable
-fun PreviewScreen() {
+fun PreviewLoadingScreen() {
     LoadingScreen("대기중")
 }

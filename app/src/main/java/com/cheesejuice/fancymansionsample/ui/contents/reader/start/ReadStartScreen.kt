@@ -6,11 +6,10 @@ import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.ImageLoader
@@ -21,6 +20,7 @@ import coil.request.ImageRequest
 import coil.size.Size.Companion.ORIGINAL
 import com.cheesejuice.fancymansionsample.R
 import com.cheesejuice.fancymansionsample.data.models.Config
+import com.cheesejuice.fancymansionsample.ui.common.CustomAlertDialog
 import com.cheesejuice.fancymansionsample.ui.common.LoadingScreen
 
 @Composable
@@ -58,6 +58,8 @@ fun ReadStartScreenLoaded(
     onClickReadBookStart: (bookId:Long, slideId:Long) -> Unit = { _, _ -> }
 ) {
     Column{
+        val openDialog = remember { mutableStateOf(false)  }
+
         val context = LocalContext.current
         val imageLoader = ImageLoader.Builder(context)
             .components {
@@ -80,9 +82,16 @@ fun ReadStartScreenLoaded(
         )
 
         Text(text = state.config.title)
-        Button(onClick = { state.deleteBookPref() }){}
         Button(onClick = {
-            onClickReadBookStart(state.config.bookId, state.saveSlideId) }){}
+            openDialog.value = true
+        }){}
+
+        if (openDialog.value) {
+            CustomAlertDialog(title = stringResource(id = R.string.record_dialog_title),
+            text = stringResource(id = R.string.record_dialog_text),
+            confirmAction ={ openDialog.value = false},
+            dismissAction = { openDialog.value = false; onClickReadBookStart(state.config.bookId, state.saveSlideId) })
+        }
     }
 }
 
