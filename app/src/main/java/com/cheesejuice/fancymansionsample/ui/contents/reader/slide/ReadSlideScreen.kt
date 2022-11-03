@@ -1,5 +1,6 @@
 package com.cheesejuice.fancymansionsample.ui.contents.reader.slide
 
+import android.content.res.Resources
 import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.cheesejuice.fancymansionsample.ui.common.EmptyScreen
 import com.cheesejuice.fancymansionsample.ui.common.LoadingScreen
+import com.cheesejuice.fancymansionsample.ui.theme.Pink80
 
 @Composable
 fun ReadSlideScreen(
@@ -79,7 +81,8 @@ fun ReadSlideScreenLoaded(
 
         LazyColumn {
             items(state.passChoiceItems) { item ->
-                Button(onClick = {
+                Button(
+                    onClick = {
                     state.moveToNextSlide(item)
                 }){ Text(text = item.title)}
             }
