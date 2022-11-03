@@ -94,6 +94,18 @@ class SampleBook {
                               "enterConditions":[]
                             }
                           ]
+                        },
+                        {
+                          "id":203000000,
+                          "title":"없는 슬라이드 예시로",
+                          "showConditions":[],
+                          "enterItems":[
+                            {
+                              "id":203000100,
+                              "enterSlideId":9900000000,
+                              "enterConditions":[]
+                            }
+                          ]
                         }
                       ]
                 },

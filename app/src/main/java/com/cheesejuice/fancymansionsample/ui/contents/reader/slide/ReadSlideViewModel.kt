@@ -1,5 +1,7 @@
 package com.cheesejuice.fancymansionsample.ui.contents.reader.slide
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,6 +12,7 @@ import com.cheesejuice.fancymansionsample.data.repositories.file.FileRepository
 import com.cheesejuice.fancymansionsample.nav.ReadSlide
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -53,8 +56,8 @@ class ReadSlideViewModel @Inject constructor(
     }
 
     private fun moveToNextSlide(choiceItem: ChoiceItem) {
-        _uiState.value = ReadSlideUiState.Loading
         viewModelScope.launch(Dispatchers.IO) {
+            delay(500L)
             /** [#ID_COUNT] Choice Item */
             preferenceProvider.incrementIdCount(_logic.bookId, choiceItem.id)
 
@@ -103,9 +106,10 @@ class ReadSlideViewModel @Inject constructor(
         object Loading : ReadSlideUiState()
         class Loaded(
             val slide: Slide, val passChoiceItems: ArrayList<ChoiceItem>, val slideImage: File?,
+            val isSlideMove: MutableState<Boolean> = mutableStateOf(false),
             private val moveToNextSlideLambda: (choiceItem: ChoiceItem) -> Unit
         ) : ReadSlideUiState() {
-            fun moveToNextSlide(choiceItem: ChoiceItem) = moveToNextSlideLambda(choiceItem)
+            fun moveToNextSlide(choiceItem: ChoiceItem) { isSlideMove.value = true; moveToNextSlideLambda(choiceItem) }
         }
     }
 }

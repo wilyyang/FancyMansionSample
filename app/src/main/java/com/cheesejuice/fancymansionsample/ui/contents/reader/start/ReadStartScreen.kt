@@ -21,6 +21,7 @@ import coil.size.Size.Companion.ORIGINAL
 import com.cheesejuice.fancymansionsample.R
 import com.cheesejuice.fancymansionsample.data.models.Config
 import com.cheesejuice.fancymansionsample.ui.common.CustomAlertDialog
+import com.cheesejuice.fancymansionsample.ui.common.EmptyScreen
 import com.cheesejuice.fancymansionsample.ui.common.LoadingScreen
 
 @Composable
@@ -45,7 +46,7 @@ fun ReadStartScreenWithState(
             LoadingScreen(loadingText = state.message)
         }
         is ReadStartViewModel.ReadStartUiState.Empty -> {
-            Text(text = "ReadStartScreen Empty")
+            EmptyScreen()
         }
     }
 }

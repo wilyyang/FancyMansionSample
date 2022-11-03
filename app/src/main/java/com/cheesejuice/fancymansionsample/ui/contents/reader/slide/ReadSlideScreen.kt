@@ -21,6 +21,7 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
 import coil.size.Size
+import com.cheesejuice.fancymansionsample.ui.common.EmptyScreen
 import com.cheesejuice.fancymansionsample.ui.common.LoadingScreen
 
 @Composable
@@ -43,7 +44,7 @@ fun ReadSlideScreenWithState(
             LoadingScreen()
         }
         is ReadSlideViewModel.ReadSlideUiState.Empty -> {
-            Text(text = "ReadSlideScreen Empty")
+            EmptyScreen()
         }
     }
 }
@@ -83,6 +84,10 @@ fun ReadSlideScreenLoaded(
                 }){ Text(text = item.title)}
             }
         }
+    }
+
+    if(state.isSlideMove.value){
+        LoadingScreen(alpha = 0.3f)
     }
 }
 
