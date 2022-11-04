@@ -39,7 +39,7 @@ class ReadSlideViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             _logic = fileRepository.getLogicFromFile(bookId)!!
 
-            val state = makeSlideFromFile(if(slideId == Const.ID_NOT_FOUND && _logic.logics.size > 0) _logic.logics[0].slideId else slideId)
+            val state = makeSlideFromFile(if(slideId == Const.FIRST_SLIDE && _logic.logics.size > 0) _logic.logics[0].slideId else slideId)
 
             if(state is ReadSlideUiState.Loaded){
                 /** [#SAVE] Check Save */

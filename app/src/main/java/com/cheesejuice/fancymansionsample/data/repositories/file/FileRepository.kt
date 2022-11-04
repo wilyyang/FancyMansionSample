@@ -176,7 +176,7 @@ class FileRepository constructor(private val context: Context){
         makeBookFolder(config.bookId)
         makeConfigFile(config)
 
-        for(i in 1 .. 9){
+        for(i in 1 .. 11){
             val slide = Json.decodeFromString<Slide>(SampleBook.getSlideSample(i * 1_00_00_00_00L))
             makeSlideFile(config.bookId, slide)
         }

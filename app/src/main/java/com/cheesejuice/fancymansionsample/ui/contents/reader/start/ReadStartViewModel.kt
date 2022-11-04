@@ -38,8 +38,8 @@ class ReadStartViewModel @Inject constructor(
             config?.also{
                 _uiState.value = ReadStartUiState.Loaded(
                     config = it,
-                    saveSlideId = preferenceProvider.getSaveSlideId(it.bookId),
                     coverImage = fileRepository.getImageFile(it.bookId, it.coverImage, isCover = true),
+                    getSaveSlideIdLambda = { bookId -> preferenceProvider.getSaveSlideId(bookId) },
                     deleteBookPrefLambda = { bookId -> preferenceProvider.deleteBookPref(bookId) }
                 )
             }?:also{
@@ -60,9 +60,11 @@ class ReadStartViewModel @Inject constructor(
         object Empty : ReadStartUiState()
         class Loading(val message: String) : ReadStartUiState()
         class Loaded(
-            val config: Config, val saveSlideId: Long, val coverImage: File?,
+            val config: Config, val coverImage: File?,
+            private val getSaveSlideIdLambda: (Long) -> Long,
             private val deleteBookPrefLambda: (Long) -> Unit
         ) : ReadStartUiState() {
+            fun getSaveSlideId() = getSaveSlideIdLambda(config.bookId)
             fun deleteBookPref() = deleteBookPrefLambda(config.bookId)
         }
     }

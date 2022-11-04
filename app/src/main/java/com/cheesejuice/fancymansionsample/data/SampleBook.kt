@@ -106,6 +106,30 @@ class SampleBook {
                               "enterConditions":[]
                             }
                           ]
+                        },
+                        {
+                          "id":204000000,
+                          "title":"이미지 파일 못찾음 예시로",
+                          "showConditions":[],
+                          "enterItems":[
+                            {
+                              "id":204000100,
+                              "enterSlideId":1000000000,
+                              "enterConditions":[]
+                            }
+                          ]
+                        },
+                        {
+                          "id":205000000,
+                          "title":"이미지 없는 슬라이드",
+                          "showConditions":[],
+                          "enterItems":[
+                            {
+                              "id":205000100,
+                              "enterSlideId":1100000000,
+                              "enterConditions":[]
+                            }
+                          ]
                         }
                       ]
                 },
@@ -325,7 +349,9 @@ class SampleBook {
                 },
                 { "slideId":900000000, "slideTitle":"아니 이 녀석 집에 있었잖아?", "type":3, 
                       "choiceItems":[]
-                }
+                },
+                { "slideId":1000000000, "slideTitle":"이미지 파일 못찾음 예시로", "type":1, "choiceItems":[] },
+                { "slideId":1100000000, "slideTitle":"이미지 없는 슬라이드", "type":1, "choiceItems":[] }
             ]
         }
         """.trimIndent()
@@ -419,6 +445,26 @@ class SampleBook {
                       "slideTitle":"아니 이 녀석 집에 있었잖아?",
                       "slideImage":"image_4.gif",
                       "description":"이럴수가! 그렇게 찾았던 존이 언제 돌아와 집에서 자고 있었을까요?\n후.. 걱정도 많이 했지만 귀여우니까 봐준다.\n존 크리스탈.. 넌 내꺼야!..",
+                      "question":""
+                    } 
+                    """.trimIndent()
+                1000000000L ->
+                    """
+                    {
+                      "slideId":1000000000,
+                      "slideTitle":"이미지 파일 못찾음 예시로",
+                      "slideImage":"not_found.jpg",
+                      "description":"",
+                      "question":""
+                    } 
+                    """.trimIndent()
+                1100000000L ->
+                    """
+                    {
+                      "slideId":1100000000,
+                      "slideTitle":"이미지 없는 슬라이드",
+                      "slideImage":"",
+                      "description":"",
                       "question":""
                     } 
                     """.trimIndent()
