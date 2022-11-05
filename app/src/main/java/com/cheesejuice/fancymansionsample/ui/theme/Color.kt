@@ -12,3 +12,5 @@ val Pink40 = Color(0xFF7D5260)
 
 val PurpleDarkFancy = Color(0xFF7C4B9F)
 val PurpleGreyFancy = Color(0xFF8A64B1)
+
+val DividerDark = Color(0X10323E4E)
