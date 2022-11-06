@@ -18,6 +18,61 @@ val NotoSansKRFontFamily = FontFamily(
     Font(R.font.notosans_kr_black, FontWeight.Black)
 )
 
+val ReaderTitleStyle = TextStyle(
+    fontFamily = NotoSansKRFontFamily,
+    fontWeight = FontWeight.Medium,
+    color = SlideButtonTextGray,
+    letterSpacing = 0.5.sp,
+    fontSize = 20.sp,
+    platformStyle = PlatformTextStyle(
+        includeFontPadding = false
+    )
+)
+
+val ReaderSubTitleStyle = TextStyle(
+    fontFamily = NotoSansKRFontFamily,
+    fontWeight = FontWeight.Medium,
+    color = SlideButtonTextGray,
+    letterSpacing = 0.5.sp,
+    fontSize = 16.sp,
+    platformStyle = PlatformTextStyle(
+        includeFontPadding = false
+    )
+)
+
+
+val ReaderInfoStyle = TextStyle(
+    fontFamily = NotoSansKRFontFamily,
+    fontWeight = FontWeight.Normal,
+    color = SlideButtonTextGray,
+    letterSpacing = 0.5.sp,
+    fontSize = 13.sp,
+    platformStyle = PlatformTextStyle(
+        includeFontPadding = false
+    )
+)
+
+val ReaderScriptStyle = TextStyle(
+    fontFamily = NotoSansKRFontFamily,
+    fontWeight = FontWeight.Normal,
+    color = SlideButtonTextGray,
+    letterSpacing = 0.5.sp,
+    fontSize = 15.sp,
+    platformStyle = PlatformTextStyle(
+        includeFontPadding = false
+    )
+)
+
+val SlideButtonStyle = TextStyle(
+    fontFamily = NotoSansKRFontFamily,
+    fontWeight = FontWeight.Normal,
+    color = SlideButtonTextGray,
+    letterSpacing = 0.5.sp,
+    platformStyle = PlatformTextStyle(
+        includeFontPadding = false
+    )
+)
+
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(

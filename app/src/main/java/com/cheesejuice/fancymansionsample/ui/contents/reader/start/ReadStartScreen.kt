@@ -9,6 +9,8 @@ import androidx.compose.material3.Button
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -16,6 +18,10 @@ import com.cheesejuice.fancymansionsample.Const
 import com.cheesejuice.fancymansionsample.R
 import com.cheesejuice.fancymansionsample.data.models.Config
 import com.cheesejuice.fancymansionsample.ui.common.*
+import com.cheesejuice.fancymansionsample.ui.theme.ReaderInfoStyle
+import com.cheesejuice.fancymansionsample.ui.theme.ReaderScriptStyle
+import com.cheesejuice.fancymansionsample.ui.theme.ReaderTitleStyle
+import com.cheesejuice.fancymansionsample.util.Formatter
 
 @Composable
 fun ReadStartScreen(
@@ -66,27 +72,37 @@ fun ReadStartScreenLoaded(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(horizontal = 20.dp)
                     .verticalScroll(rememberScrollState())
             ) {
-                Text(text = state.config.title)
-                Row {
-                    Text(text = "${state.config.version}")
-                    Text(text = "${state.config.updateTime}")
+                Text(modifier = Modifier.padding(vertical = 20.dp), text = state.config.title, style = ReaderTitleStyle)
+                Row (modifier = Modifier.padding(bottom = 8.dp)){
+                    Text(
+                        modifier = Modifier.weight(1.0f),
+                        text = "v ${Formatter.versionToString(state.config.version)}",
+                        style = ReaderInfoStyle
+                    )
+                    Text(
+                        modifier = Modifier.weight(1.0f),
+                        text = Formatter.longToTimeUntilSecond(state.config.updateTime),
+                        style = ReaderInfoStyle,
+                        textAlign = TextAlign.End
+                    )
                 }
 
                 Row {
-                    Text(text = stringResource(id = R.string.book_config_user))
-                    Text(text = state.config.user)
+                    Text(text = stringResource(id = R.string.book_config_user), style = ReaderInfoStyle, fontWeight = FontWeight.Medium)
+                    Text(text = state.config.user, style = ReaderInfoStyle)
                 }
                 Row {
-                    Text(text = stringResource(id = R.string.book_config_writer))
-                    Text(text = state.config.writer)
+                    Text(text = stringResource(id = R.string.book_config_writer), style = ReaderInfoStyle, fontWeight = FontWeight.Medium)
+                    Text(text = state.config.writer, style = ReaderInfoStyle)
                 }
                 Row {
-                    Text(text = stringResource(id = R.string.book_config_illustrator))
-                    Text(text = state.config.illustrator)
+                    Text(text = stringResource(id = R.string.book_config_illustrator), style = ReaderInfoStyle, fontWeight = FontWeight.Medium)
+                    Text(text = state.config.illustrator, style = ReaderInfoStyle)
                 }
-                Text(text = state.config.description)
+                Text(modifier = Modifier.padding(vertical = 20.dp), text = state.config.description, style = ReaderScriptStyle)
             }
         }
         DividerRow()

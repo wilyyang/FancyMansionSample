@@ -93,6 +93,7 @@ class ReadSlideViewModel @Inject constructor(
                 }
                 return ReadSlideUiState.Loaded(
                     slide = slide,
+                    slideType = slideLogic.type,
                     passChoiceItems = passChoiceItems,
                     slideImage = fileRepository.getImageFile(_logic.bookId, slide.slideImage),
                     moveToNextSlideLambda = { choiceItem -> moveToNextSlide(choiceItem) })
@@ -105,7 +106,7 @@ class ReadSlideViewModel @Inject constructor(
         object Empty : ReadSlideUiState()
         object Loading : ReadSlideUiState()
         class Loaded(
-            val slide: Slide, val passChoiceItems: ArrayList<ChoiceItem>, val slideImage: File?,
+            val slide: Slide, val passChoiceItems: ArrayList<ChoiceItem>, val slideType:Int, val slideImage: File?,
             val isSlideMove: MutableState<Boolean> = mutableStateOf(false),
             private val moveToNextSlideLambda: (choiceItem: ChoiceItem) -> Unit
         ) : ReadSlideUiState() {
