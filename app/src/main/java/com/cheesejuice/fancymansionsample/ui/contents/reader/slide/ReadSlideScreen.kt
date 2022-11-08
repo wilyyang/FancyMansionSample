@@ -50,43 +50,41 @@ fun ReadSlideScreenLoaded(
     Column(modifier = Modifier
         .fillMaxWidth()
         .fillMaxHeight()){
-        Column(modifier = Modifier.weight(weight = 1.0f, true)){
-            if(state.slide.slideImage != ""){
-                SelectiveImage(
+        if(state.slide.slideImage != ""){
+            SelectiveImage(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(320.dp),
+                imageFile = state.slideImage)
+        }
+        DividerRow()
+        LazyColumn (modifier = Modifier
+            .weight(1f)
+            .padding(horizontal = 20.dp)){
+            item{
+                Column(modifier = Modifier.padding(vertical = 20.dp)) {
+                    if(state.slideType == Const.SLIDE_TYPE_END){
+                        TypeText(text="엔딩")
+                    }
+                    Text(text = state.slide.slideTitle, style = ReaderTitleStyle)
+                }
+                Text(modifier = Modifier.padding(bottom = 20.dp), text = state.slide.description, style = ReaderScriptStyle)
+                Text(modifier = Modifier.padding(bottom = 20.dp), text = state.slide.question, style = ReaderSubTitleStyle)
+            }
+
+            items(state.passChoiceItems) { item ->
+                Button(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(320.dp),
-                    imageFile = state.slideImage)
-            }
-            DividerRow()
-            LazyColumn (modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 20.dp)){
-                item{
-                    Column(modifier = Modifier.padding(vertical = 20.dp)) {
-                        if(state.slideType == Const.SLIDE_TYPE_END){
-                            TypeText(text="엔딩")
-                        }
-                        Text(text = state.slide.slideTitle, style = ReaderTitleStyle)
-                    }
-                    Text(modifier = Modifier.padding(bottom = 20.dp), text = state.slide.description, style = ReaderScriptStyle)
-                    Text(modifier = Modifier.padding(bottom = 20.dp), text = state.slide.question, style = ReaderSubTitleStyle)
-                }
-
-                items(state.passChoiceItems) { item ->
-                    Button(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 5.dp, vertical = 8.dp),
-                        contentPadding = PaddingValues(13.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = SlideButtonPink
-                        ),
-                        shape = RoundedCornerShape(15),
-                        onClick = { state.moveToNextSlide(item) })
-                    {
-                        Text(modifier = Modifier.fillMaxWidth(), text = item.title, style = SlideButtonStyle)
-                    }
+                        .padding(horizontal = 5.dp, vertical = 8.dp),
+                    contentPadding = PaddingValues(13.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = SlideButtonPink
+                    ),
+                    shape = RoundedCornerShape(15),
+                    onClick = { state.moveToNextSlide(item) })
+                {
+                    Text(modifier = Modifier.fillMaxWidth(), text = item.title, style = SlideButtonStyle)
                 }
             }
         }
